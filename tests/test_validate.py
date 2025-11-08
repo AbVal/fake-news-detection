@@ -118,7 +118,6 @@ class TestValidate:
 
             mock_load_model.assert_called_once_with("/path/to/custom/model")
 
-
     @patch("validate.evaluator")
     @patch("validate.pipeline")
     @patch("validate.load_metrics")
