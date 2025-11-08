@@ -28,7 +28,7 @@ pydantic==2.12.4
 pydantic_core==2.41.5
 pytest==8.3.3
 pytest-cov==7.0.0
-PyYAML==5.4.1
+PyYAML==6.0.3
 safetensors==0.6.2
 scikit-learn==1.7.2
 scipy==1.15.3
