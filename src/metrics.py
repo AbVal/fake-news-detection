@@ -26,7 +26,7 @@ def load_metrics(metric_names: List[str]) -> evaluate.CombinedEvaluations:  # ty
 
 class ComputeMetrics:
     def __init__(self, metric_names: List[str] = METRIC_NAMES) -> None:
-        self.metrics = load_metrics(metric_names)
+        self.metrics = load_metrics(METRIC_NAMES)
 
     def __call__(self, eval_pred: EvalPrediction) -> Dict[str, ArrayLike]:
         predictions, labels = eval_pred

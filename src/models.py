@@ -20,7 +20,6 @@ def fetch_distilbert_tokenizer() -> PreTrainedTokenizer:
     tokenizer = AutoTokenizer.from_pretrained("distilbert/distilbert-base-uncased")
     return tokenizer
 
-
 def fetch_distilbert_model(
     num_labels: int = 2,
     id2label: Dict[int, str] = ID2LABEL,
@@ -34,7 +33,6 @@ def fetch_distilbert_model(
         label2id=label2id,
     )
     return model
-
 
 def load_trained_model(model_path: str) -> PreTrainedModel:
     logger.info("Loading trained model")

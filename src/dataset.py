@@ -50,7 +50,7 @@ def split_df_train_val_test(df: pd.DataFrame,
     return train, val, test
 
 
-def save_df(df: pd.DataFrame, dataframe_path: str) -> None:
+def save_df(df, dataframe_path):
     if os.path.exists(dataframe_path):
         logger.warning(f'Overwriting {dataframe_path}')
     df.to_csv(dataframe_path, index=False, compression='gzip')
