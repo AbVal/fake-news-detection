@@ -13,6 +13,7 @@ evaluate==0.4.6
 flake8==7.3.0
 fsspec==2025.10.0
 huggingface-hub==0.36.0
+mlflow==3.8.1
 mypy==1.14.0
 mypy-extensions==1.0.0
 numpy==2.1.2

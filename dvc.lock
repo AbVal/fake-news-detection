@@ -45,8 +45,8 @@ stages:
       size: 2697167
     - path: src/config.py
       hash: md5
-      md5: db5763be010f383f87e0a6d44f5351ce
-      size: 1619
+      md5: b4285a75c59ca54345bcb491030ae6ca
+      size: 1616
     - path: src/dataset.py
       hash: md5
       md5: 08d990f79dca3b28af07ed1bdaa740e1
@@ -65,8 +65,8 @@ stages:
       size: 1018
     - path: train.py
       hash: md5
-      md5: b3cd25c6e9294fbecb25f4ff4723b0bc
-      size: 3061
+      md5: 0d6fbd48b8bbd0a9a9b815a6e6660043
+      size: 4708
     params:
       params.yaml:
         train.config_path: training_params.yaml
@@ -80,17 +80,27 @@ stages:
         output_dir: model
         per_device_eval_batch_size: 16
         per_device_train_batch_size: 16
-        report_to: tensorboard
+        report_to:
+        - mlflow
         save_strategy: no
         seed: 42
         verbose: true
         weight_decay: 0.01
     outs:
+    - path: mlflow.db
+      hash: md5
+      md5: fd5842f67d68f85f357450cfbae9957f
+      size: 610304
+    - path: mlruns
+      hash: md5
+      md5: f0d62bd31a313342c2fe7ae2e8208b88.dir
+      size: 268786689
+      nfiles: 8
     - path: model
       hash: md5
-      md5: 4ce4e2af8d3e2b1f320fce0b8398bdcd.dir
-      size: 268794850
-      nfiles: 8
+      md5: e941715b55396bce35ed4cf793e81b34.dir
+      size: 268783374
+      nfiles: 7
   evaluate:
     cmd: python3 validate.py --model_path=model --data_path="data/test.csv.gz" 
       --metrics_path=metrics.json

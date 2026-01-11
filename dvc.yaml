@@ -33,6 +33,8 @@ stages:
     - ${prepare.data_path}/val.csv.gz
     outs:
     - ${output_dir}
+    - mlruns
+    - mlflow.db
     params:
     - train.config_path
     - training_params.yaml:

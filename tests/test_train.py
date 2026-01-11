@@ -41,6 +41,7 @@ class TestTrain:
         yield config_path
         os.unlink(config_path)
 
+    @patch("train.mlflow")
     @patch("train.Trainer")
     @patch("train.TrainingArguments")
     @patch("train.DataCollatorWithPadding")
@@ -65,12 +66,15 @@ class TestTrain:
         mock_data_collator,
         mock_training_args,
         mock_trainer,
+        mock_mlflow,
     ):
         with patch("train.argparse.ArgumentParser.parse_args") as mock_parse:
             mock_parse.return_value = argparse.Namespace(
                 config_path=None,
                 train_data_path=os.path.join("data", "train.csv.gz"),
                 val_data_path=os.path.join("data", "val.csv.gz"),
+                mlflow_experiment_name="pytest_exp",
+                mlflow_run_name="pytest_run",
             )
 
             mock_tokenizer.return_value = MagicMock()
@@ -140,7 +144,7 @@ class TestTrain:
             assert call_kwargs["eval_steps"] == 250
             assert call_kwargs["logging_steps"] == 250
             assert call_kwargs["fp16"]
-            assert call_kwargs["report_to"] == "tensorboard"
+            assert call_kwargs["report_to"] == ["mlflow"]
 
             mock_trainer.assert_called_once_with(
                 model=mock_model.return_value,
@@ -155,6 +159,7 @@ class TestTrain:
             mock_trainer_instance.train.assert_called_once()
             mock_trainer_instance.save_model.assert_called_once_with("model")
 
+    @patch("train.mlflow")
     @patch("train.Trainer")
     @patch("train.TrainingArguments")
     @patch("train.DataCollatorWithPadding")
@@ -179,6 +184,7 @@ class TestTrain:
         mock_data_collator,
         mock_training_args,
         mock_trainer,
+        mock_mlflow,
         sample_config_file,
         mock_config,
     ):
@@ -187,6 +193,8 @@ class TestTrain:
                 config_path=sample_config_file,
                 train_data_path="/custom/path/train.csv",
                 val_data_path="/custom/path/val.csv",
+                mlflow_experiment_name="pytest_exp",
+                mlflow_run_name="pytest_run",
             )
 
             mock_tokenizer.return_value = MagicMock()
@@ -223,6 +231,7 @@ class TestTrain:
             assert not call_kwargs["fp16"]
             assert call_kwargs["report_to"] == "none"
 
+    @patch("train.mlflow")
     @patch("train.Trainer")
     @patch("train.TrainingArguments")
     @patch("train.DataCollatorWithPadding")
@@ -247,6 +256,7 @@ class TestTrain:
         mock_data_collator,
         mock_training_args,
         mock_trainer,
+        mock_mlflow,
     ):
         # Create a temporary config file with verbose=False
         config_data = TrainingConfig().model_dump()
@@ -262,6 +272,8 @@ class TestTrain:
                     config_path=config_path,
                     train_data_path=os.path.join("data", "train.csv.gz"),
                     val_data_path=os.path.join("data", "val.csv.gz"),
+                    mlflow_experiment_name="pytest_exp",
+                    mlflow_run_name="pytest_run",
                 )
 
                 # Mock minimal components
@@ -279,11 +291,16 @@ class TestTrain:
         finally:
             os.unlink(config_path)
 
+    @patch("train.mlflow")
     @patch("train.Trainer")
     @patch("train.TrainingArguments")
     @patch("train.logging.basicConfig")
     def test_main_with_invalid_config_file(
-        self, mock_logging, mock_training_args, mock_trainer
+        self,
+        mock_logging,
+        mock_training_args,
+        mock_trainer,
+        mock_mlflow,
     ):
         """Test main function with invalid config file"""
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
@@ -296,6 +313,8 @@ class TestTrain:
                     config_path=config_path,
                     train_data_path=os.path.join("data", "train.csv.gz"),
                     val_data_path=os.path.join("data", "val.csv.gz"),
+                    mlflow_experiment_name="pytest_exp",
+                    mlflow_run_name="pytest_run",
                 )
 
                 with pytest.raises(ValidationError):
@@ -303,6 +322,7 @@ class TestTrain:
         finally:
             os.unlink(config_path)
 
+    @patch("train.mlflow")
     @patch("train.Trainer")
     @patch("train.TrainingArguments")
     @patch("train.DataCollatorWithPadding")
@@ -325,6 +345,7 @@ class TestTrain:
         mock_data_collator,
         mock_training_args,
         mock_trainer,
+        mock_mlflow,
     ):
         """Test that all TrainingArguments parameters are passed correctly"""
         with patch("train.argparse.ArgumentParser.parse_args") as mock_parse:
@@ -332,6 +353,8 @@ class TestTrain:
                 config_path=None,
                 train_data_path=os.path.join("data", "train.csv.gz"),
                 val_data_path=os.path.join("data", "val.csv.gz"),
+                mlflow_experiment_name="pytest_exp",
+                mlflow_run_name="pytest_run",
             )
 
             mock_tokenizer.return_value = MagicMock()
@@ -367,17 +390,24 @@ class TestTrain:
             for param in expected_params:
                 assert param in call_kwargs
 
+    @patch("train.mlflow")
     @patch("train.Trainer")
     @patch("train.TrainingArguments")
     @patch("train.logging.basicConfig")
     def test_main_exception_handling(
-        self, mock_logging, mock_training_args, mock_trainer
+        self,
+        mock_logging,
+        mock_training_args,
+        mock_trainer,
+        mock_mlflow,
     ):
         with patch("train.argparse.ArgumentParser.parse_args") as mock_parse:
             mock_parse.return_value = argparse.Namespace(
                 config_path=None,
                 train_data_path=os.path.join("data", "train.csv.gz"),
                 val_data_path=os.path.join("data", "val.csv.gz"),
+                mlflow_experiment_name="pytest_exp",
+                mlflow_run_name="pytest_run",
             )
 
             with patch("train.load_dataset_from_df") as mock_load_dataset:
@@ -386,6 +416,7 @@ class TestTrain:
                 with pytest.raises(Exception, match="Data loading error"):
                     main()
 
+    @patch("train.mlflow")
     @patch("train.Trainer")
     @patch("train.TrainingArguments")
     @patch("train.DataCollatorWithPadding")
@@ -408,12 +439,15 @@ class TestTrain:
         mock_data_collator,
         mock_training_args,
         mock_trainer,
+        mock_mlflow,
     ):
         with patch("train.argparse.ArgumentParser.parse_args") as mock_parse:
             mock_parse.return_value = argparse.Namespace(
                 config_path=None,
                 train_data_path=os.path.join("data", "train.csv.gz"),
                 val_data_path=os.path.join("data", "val.csv.gz"),
+                mlflow_experiment_name="pytest_exp",
+                mlflow_run_name="pytest_run",
             )
 
             # Setup mocks
@@ -442,6 +476,7 @@ class TestTrain:
             mock_trainer_instance.train.assert_called_once()
             mock_trainer_instance.save_model.assert_called_once_with("model")
 
+    @patch("train.mlflow")
     @patch("train.Trainer")
     @patch("train.TrainingArguments")
     @patch("train.DataCollatorWithPadding")
@@ -464,6 +499,7 @@ class TestTrain:
         mock_data_collator,
         mock_training_args,
         mock_trainer,
+        mock_mlflow,
     ):
         """Test that appropriate logging statements are called"""
         with patch("train.argparse.ArgumentParser.parse_args") as mock_parse:
@@ -471,6 +507,8 @@ class TestTrain:
                 config_path=None,
                 train_data_path=os.path.join("data", "train.csv.gz"),
                 val_data_path=os.path.join("data", "val.csv.gz"),
+                mlflow_experiment_name="pytest_exp",
+                mlflow_run_name="pytest_run",
             )
 
             mock_tokenizer.return_value = MagicMock()
@@ -486,10 +524,11 @@ class TestTrain:
 
                 mock_logger.info.assert_has_calls(
                     [
+                        call("Logged dvc.lock file artifact"),
                         call("Loading datasets"),
                         call("Tokenizing datasets"),
                         call("Starting model training"),
-                        call("Logging metrics to tensorboard"),
+                        call("Logging metrics to ['mlflow']"),
                         call("Saving model"),
                     ]
                 )

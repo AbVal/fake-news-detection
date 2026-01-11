@@ -26,7 +26,7 @@ class TrainingConfig(BaseModel):
     )
     fp16: bool = Field(default=True)
     report_to: str | List[str] = Field(
-        default="tensorboard",
+        default=["mlflow"],
         description="""The list of integrations to report the results and logs to.
                        Supported platforms are "azure_ml", "clearml", "codecarbon", "comet_ml",
                        "dagshub", "dvclive", "flyte", "mlflow", "neptune", "swanlab", "tensorboard",
