@@ -1,10 +1,11 @@
 import argparse
 import logging
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, mock_open
 from validate import main
 
 
 class TestValidate:
+    @patch("validate.open", new_callable=mock_open)
     @patch("validate.evaluator")
     @patch("validate.pipeline")
     @patch("validate.load_metrics")
@@ -23,9 +24,12 @@ class TestValidate:
         mock_load_metrics,
         mock_pipeline,
         mock_evaluator,
+        mock_file
     ):
         with patch("validate.argparse.ArgumentParser.parse_args") as mock_parse:
-            mock_parse.return_value = argparse.Namespace(model_path="model", data_path="data")
+            mock_parse.return_value = argparse.Namespace(model_path="model",
+                                                         data_path="data",
+                                                         metrics_path="metrics.json")
 
             mock_model = MagicMock()
             mock_load_model.return_value = mock_model
@@ -79,6 +83,7 @@ class TestValidate:
 
             mock_print.assert_called_once_with(mock_results)
 
+    @patch("validate.open", new_callable=mock_open)
     @patch("validate.evaluator")
     @patch("validate.pipeline")
     @patch("validate.load_metrics")
@@ -97,11 +102,13 @@ class TestValidate:
         mock_load_metrics,
         mock_pipeline,
         mock_evaluator,
+        mock_file
     ):
         with patch("validate.argparse.ArgumentParser.parse_args") as mock_parse:
             mock_parse.return_value = argparse.Namespace(
                 model_path="/path/to/custom/model",
-                data_path="data"
+                data_path="data",
+                metrics_path="metrics.json"
             )
 
             mock_model = MagicMock()
@@ -118,7 +125,7 @@ class TestValidate:
 
             mock_load_model.assert_called_once_with("/path/to/custom/model")
 
-
+    @patch("validate.open", new_callable=mock_open)
     @patch("validate.evaluator")
     @patch("validate.pipeline")
     @patch("validate.load_metrics")
@@ -137,11 +144,13 @@ class TestValidate:
         mock_load_metrics,
         mock_pipeline,
         mock_evaluator,
+        mock_file
     ):
         with patch("validate.argparse.ArgumentParser.parse_args") as mock_parse:
             mock_parse.return_value = argparse.Namespace(
                 model_path="model",
-                data_path="/path/to/custom/data"
+                data_path="/path/to/custom/data",
+                metrics_path="metrics.json"
             )
 
             mock_model = MagicMock()
