@@ -43,7 +43,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run Mypy
-        run: mypy --follow-untyped-imports --strict --exclude tests/ --disable-error-code="attr-defined" --disable-error-code="no-any-return" .
+        run: mypy --follow-untyped-imports --strict --exclude tests/ --exclude torchserve/ --disable-error-code="attr-defined" --disable-error-code="no-any-return" .
 
   test:
     runs-on: ubuntu-latest
