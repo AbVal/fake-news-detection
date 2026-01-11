@@ -43,8 +43,12 @@ jobs:
       run: |
         dvc pull
 
-    - name: Set up Docker Buildx
+    - name: Set up Docker Buildx with container driver
       uses: docker/setup-buildx-action@v3
+      with:
+          driver: docker-container  # Явно указываем нужный драйвер[citation:1][citation:10]
+          driver-opts: |
+            image=moby/buildkit:latest
 
     - name: Cache Docker layers
       uses: actions/cache@v3
@@ -57,9 +61,6 @@ jobs:
     - name: Build offline inference Docker image
       run: |
         docker build \
-          --build-arg BUILDKIT_INLINE_CACHE=1 \
-          --cache-from type=local,src=/tmp/.buildx-cache \
-          --cache-to type=local,dest=/tmp/.buildx-cache-new \
           -t ml-app:ci-test .
 
     - name: Test offline inference Docker container
@@ -103,7 +104,6 @@ jobs:
     - name: Build online inference Docker image (TorchServe)
       run: |
         docker build \
-          --build-arg BUILDKIT_INLINE_CACHE=1 \
           -t mymodel-serve:ci-test \
           -f torchserve/torchserve.Dockerfile .
 
