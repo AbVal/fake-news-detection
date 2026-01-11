@@ -20,7 +20,7 @@ class TestTrainingConfig:
         assert config.eval_steps == 250
         assert config.logging_steps == 250
         assert config.fp16 is True
-        assert config.report_to == "tensorboard"
+        assert config.report_to == ["mlflow"]
 
     def test_custom_values(self):
         custom_config = TrainingConfig(

@@ -59,7 +59,7 @@ def main() -> None:
             logger.info("Logged dvc.lock file artifact")
 
             with open("dvc.lock", 'r') as f:
-                dvc_lock_content = yaml.safe_load(f)
+                dvc_lock_content = yaml.safe_load(f)  # type: ignore[no-untyped-call]
 
                 train_lock = dvc_lock_content['stages']['train']['deps'][0]
                 val_lock = dvc_lock_content['stages']['train']['deps'][1]
