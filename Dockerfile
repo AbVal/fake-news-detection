@@ -3,12 +3,13 @@ FROM python:3.10-slim AS builder
 
 WORKDIR /project
 
-ENV PIP_NO_CACHE_DIR=1
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+ENV PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-RUN apt-get update
+RUN apt-get update && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY requirements_docker.txt .
 
@@ -18,15 +19,15 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /project/wheels -r requiremen
 # final stage
 FROM python:3.10-slim
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
 WORKDIR /project
 
 COPY --from=builder /project/wheels /wheels
-COPY --from=builder /project/requirements_docker.txt .
 
-RUN pip install --no-cache /wheels/*
+RUN pip install --no-cache /wheels/* && \
+    rm -rf /wheels
 
 COPY src/ ./src/
 

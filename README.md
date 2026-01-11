@@ -49,7 +49,7 @@ CUDA 12 (Если есть желание обучать на GPU)
 ### Установка и запуск
 
 #### Клонирование репозитория
-Креды dvc находятся в anytask и необходимы для работы dvc pull, dvc repro и для сборки Docker-образа=ов (при сборке используется скачанная из dvc модель).
+Креды dvc находятся в anytask и необходимы для работы dvc pull, dvc repro и для сборки Docker-образов (при сборке используются скачанные из dvc модель и mar-архив).
 Настройка кредов:
 
 ```bash
@@ -88,20 +88,6 @@ mlflow ui
 ```
 (Авторские логи лежат в папке mlruns и в файле mlflow.db)
 
-
-#### Сборка образа
-При сборке используется cpu-версия pytorch для экономии времени сборки и места, занимаемого контейнером.
-```bash
-docker build -t ml-app:v1 .
-```
-
-#### Запуск оффлайн-инференса
-Для запуска оффлайн-инференса можно воспользоваться следующей командой:
-```bash
-docker run -v ./docker_data:/docker_data ml-app:v1 --input_path /docker_data/input.csv --output_path /docker_data/output.csv
-```
-В данном случае скрипт ожидает входные данные в формате, считываемом pd.read_csv (csv-файл или сжатые файлы по типу .csv.gz). Данные должны лежать в папке docker_data. Таблица во входных данных должна содержать столбец text -- тексты статей, проверяемых на наличие фейков. Скрипт возвращает данные в csv-файл output.csv в формате таблицы с колонками text (обрезанное начало статьи), prediction (предсказание) и score (уверенность модели).
-
 #### Валидация модели
 ```bash
 python3 validate.py --model_path="model" --data_path="data/test.csv.gz" --metrics_path="metrics.json"
@@ -116,3 +102,35 @@ python3 validate.py --model_path="model" --data_path="data/test.csv.gz" --metric
 | Total Time | 18.98 sec |
 | Throughput | 286.51 samples/sec |
 | Latency | 3.49 ms |
+
+#### Сборка образа
+При сборке используется cpu-версия pytorch для экономии времени сборки и места, занимаемого контейнером.
+```bash
+docker build -t ml-app:v1 .
+```
+
+#### Запуск оффлайн-инференса
+Для запуска оффлайн-инференса можно воспользоваться следующей командой:
+```bash
+docker run -v ./docker_data:/docker_data ml-app:v1 --input_path /docker_data/input.csv --output_path /docker_data/output.csv
+```
+В данном случае скрипт ожидает входные данные в формате, считываемом pd.read_csv (csv-файл или сжатые файлы по типу .csv.gz). Данные должны лежать в папке docker_data. Таблица во входных данных должна содержать столбец text -- тексты статей, проверяемых на наличие фейков. Скрипт возвращает данные в csv-файл output.csv в формате таблицы с колонками text (обрезанное начало статьи), prediction (предсказание) и score (уверенность модели).
+
+#### Сборка для онлайн-инференса
+```bash
+docker build -t mymodel-serve:v1 -f torchserve/torchserve.Dockerfile .
+```
+
+#### Запуск онлайн-инференса
+```bash
+docker run -d -p 8080:8080 -p 8081:8081 mymodel-serve:v1
+```
+
+#### Примеры запросов
+```bash
+curl -X POST http://localhost:8080/predictions/distilbert -T torchserve/examples/POSITIVE.txt
+# output: POSITIVE
+curl -X POST http://localhost:8080/predictions/distilbert -T torchserve/examples/NEGATIVE.txt
+# output: NEGATIVE
+```
+В данных запросах на вход модели поступает строка текста, который необходимо классифицировать. Запросы возвращают класс текста. Содержимое запросов можно увидеть в указанных файлах в папке torchserve/examples.

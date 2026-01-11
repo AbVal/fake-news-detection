@@ -8,3 +8,5 @@ model
 data
 mlruns
 mlflow.db
+model_store
+logs
