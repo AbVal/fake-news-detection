@@ -75,7 +75,7 @@ tensorboard --logdir model
 
 #### Валидация модели
 ```bash
-python3 validate.py --model_path="model" --data_path="data/test.csv.gz"
+python3 validate.py --model_path="model" --data_path="data/test.csv.gz" --metrics_path="metrics.json"
 ```
 Результат валидации на текущей модели:
 | Metric | Value |
