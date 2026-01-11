@@ -6,3 +6,5 @@ __*__/
 .coverage
 model
 data
+mlruns
+mlflow.db

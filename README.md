@@ -35,6 +35,7 @@
 6. Проверить воспроизводимость экспериментов
 7. Покрыть код тестами (unit, integration, проверки типов и pep8)
 8. Добавить версионирование моделей и данных через DVC
+9. Интегрировать MLflow для трекинга экспериментов
 
 ## Установка и запуск
 
@@ -80,11 +81,11 @@ python3 prepare_dataset.py --data_path="data" --val_size=0.1 --test_size=0.2 --r
 ```bash
 python3 train.py --config_path="training_params.yaml" --train_data_path="data/train.csv.gz" --val_data_path="data/val.csv.gz"
 ```
-#### (Опционально) запуск тензорборда для мониторинга метрик
+#### Запуск MLflow для мониторинга метрик
 ```bash
-tensorboard --logdir model
+mlflow ui
 ```
-(Авторский файл тензорборда с логами лежит в папке model/runs)
+(Авторские логи лежат в папке mlruns и в файле mlflow.db)
 
 
 #### Валидация модели

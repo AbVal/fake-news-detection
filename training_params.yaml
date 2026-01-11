@@ -12,4 +12,4 @@ eval_strategy: steps
 eval_steps: 250
 logging_steps: 250
 fp16: True
-report_to: tensorboard
+report_to: ["mlflow"]
