@@ -1,0 +1,7 @@
+.ipynb*/
+.*_cache/
+.vscode/
+__*__/
+*.ipynb
+.coverage
+/model
