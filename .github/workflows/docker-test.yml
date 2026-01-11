@@ -83,14 +83,14 @@ jobs:
         
         # Verify output file exists and has correct structure
         echo "Checking output file:"
-        head -3 docker_data/output.csv
+        head -4 docker_data/output.csv
         echo ""
         echo "Number of predictions:"
         wc -l docker_data/output.csv
         
-        # Check that output contains 3 lines
+        # Check that output contains 4 lines
         response=$(wc -l docker_data/output.csv)
-        if [[ "$response" != "3 docker_data/output.csv" ]]; then
+        if [[ "$response" != "4 docker_data/output.csv" ]]; then
           echo "ERROR: Output file doesn't have expected number of predictions"
           exit 1
         fi
