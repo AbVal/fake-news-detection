@@ -34,7 +34,7 @@
 5. Реализовать код с учетом принципов ООП
 6. Проверить воспроизводимость экспериментов
 7. Покрыть код тестами (unit, integration, проверки типов и pep8)
-8. Добавить web-интерфейс и API
+8. Добавить версионирование моделей и данных через DVC
 
 ## Установка и запуск
 
@@ -47,14 +47,28 @@ CUDA 12 (Если есть желание обучать на GPU)
 ### Установка и запуск
 
 #### Клонирование репозитория
+Креды dvc находятся в anytask.
+Настройка кредов:
+
+```bash
+export AWS_ACCESS_KEY_ID='<access_key_id>'
+export AWS_SECRET_ACCESS_KEY='<secret_access_key_id>'
+```
+
 ```bash
 git clone https://github.com/AbVal/fake-news-detection.git
 cd fake-news-detection
+dvc pull
 ```
 
 #### Установка зависимостей (желательно в виртуальное окружение)
 ```bash
 pip install -r requirements.txt
+```
+
+#### Запуск всего пайплайна prepare -> train -> evaluate
+```bash
+dvc repro
 ```
 
 #### Сбор данных для обучения и валидации
