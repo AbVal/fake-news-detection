@@ -1,4 +1,5 @@
 import os
+import json
 import argparse
 import logging
 from src.models import fetch_distilbert_tokenizer, load_trained_model
@@ -19,6 +20,7 @@ def main() -> None:
     parser.add_argument("--data_path",
                         help="Path to test data",
                         default=os.path.join("data", "test.csv.gz"))
+    parser.add_argument("--metrics_path", help="Path to metrics", default="metrics.json")
 
     args = parser.parse_args()
 
@@ -39,6 +41,8 @@ def main() -> None:
     )
 
     print(results)
+    with open(args.metrics_path, 'w') as f:
+        json.dump(results, f, indent=4)
 
 
 if __name__ == "__main__":

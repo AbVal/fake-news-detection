@@ -1,0 +1,9 @@
+prepare:
+    data_path: "data"
+    random_state: 42
+    test_size: 0.2
+    val_size: 0.1
+train:
+    config_path: "training_params.yaml"
+evaluate:
+    metrics_path: "metrics.json"
