@@ -1,0 +1,125 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python3 prepare_dataset.py --data_path=data --val_size=0.1 
+      --test_size=0.2 --random_state=42
+    deps:
+    - path: prepare_dataset.py
+      hash: md5
+      md5: e97f978fe3baa543370f6285add1dd61
+      size: 1847
+    - path: src/dataset.py
+      hash: md5
+      md5: 08d990f79dca3b28af07ed1bdaa740e1
+      size: 2834
+    params:
+      params.yaml:
+        prepare.data_path: data
+        prepare.random_state: 42
+        prepare.test_size: 0.2
+        prepare.val_size: 0.1
+    outs:
+    - path: data/test.csv.gz
+      hash: md5
+      md5: cd2d1f5acdaf8014b8d5032714f1bef4
+      size: 5412309
+    - path: data/train.csv.gz
+      hash: md5
+      md5: 050f30bfa7e4abf953ad8613b3d9823f
+      size: 18992716
+    - path: data/val.csv.gz
+      hash: md5
+      md5: e3b88d714c6bbc41d32f14bcac11b9b5
+      size: 2697167
+  train:
+    cmd: python3 train.py --config_path=training_params.yaml 
+      --train_data_path="data/train.csv.gz" --val_data_path="data/val.csv.gz"
+    deps:
+    - path: data/train.csv.gz
+      hash: md5
+      md5: 050f30bfa7e4abf953ad8613b3d9823f
+      size: 18992716
+    - path: data/val.csv.gz
+      hash: md5
+      md5: e3b88d714c6bbc41d32f14bcac11b9b5
+      size: 2697167
+    - path: src/config.py
+      hash: md5
+      md5: db5763be010f383f87e0a6d44f5351ce
+      size: 1619
+    - path: src/dataset.py
+      hash: md5
+      md5: 08d990f79dca3b28af07ed1bdaa740e1
+      size: 2834
+    - path: src/metrics.py
+      hash: md5
+      md5: 23bcf3ac302aed7192c0851598b75b94
+      size: 1055
+    - path: src/models.py
+      hash: md5
+      md5: 0596fb0cbbc54dab6e67564ea6d24bb7
+      size: 1198
+    - path: src/utils.py
+      hash: md5
+      md5: fc35dbeaf666e41d8033af4d4faae0e4
+      size: 1018
+    - path: train.py
+      hash: md5
+      md5: b3cd25c6e9294fbecb25f4ff4723b0bc
+      size: 3061
+    params:
+      params.yaml:
+        train.config_path: training_params.yaml
+      training_params.yaml:
+        eval_steps: 250
+        eval_strategy: steps
+        fp16: true
+        learning_rate: 2e-05
+        logging_steps: 250
+        num_train_epochs: 2
+        output_dir: model
+        per_device_eval_batch_size: 16
+        per_device_train_batch_size: 16
+        report_to: tensorboard
+        save_strategy: no
+        seed: 42
+        verbose: true
+        weight_decay: 0.01
+    outs:
+    - path: model
+      hash: md5
+      md5: 4ce4e2af8d3e2b1f320fce0b8398bdcd.dir
+      size: 268794850
+      nfiles: 8
+  evaluate:
+    cmd: python3 validate.py --model_path=model --data_path="data/test.csv.gz" 
+      --metrics_path=metrics.json
+    deps:
+    - path: data/test.csv.gz
+      hash: md5
+      md5: cd2d1f5acdaf8014b8d5032714f1bef4
+      size: 5412309
+    - path: src/dataset.py
+      hash: md5
+      md5: 08d990f79dca3b28af07ed1bdaa740e1
+      size: 2834
+    - path: src/metrics.py
+      hash: md5
+      md5: 23bcf3ac302aed7192c0851598b75b94
+      size: 1055
+    - path: src/models.py
+      hash: md5
+      md5: 0596fb0cbbc54dab6e67564ea6d24bb7
+      size: 1198
+    - path: validate.py
+      hash: md5
+      md5: 31d08988956fb23bee5a8a346f68ba14
+      size: 1446
+    params:
+      params.yaml:
+        evaluate.metrics_path: metrics.json
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: a1a079c89b0dd26cd9e9eff767777e55
+      size: 282

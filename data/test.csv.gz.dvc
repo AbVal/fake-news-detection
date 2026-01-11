@@ -1,5 +1,0 @@
-outs:
-- md5: 6c43702a172a7390667bce818639b559
-  size: 5412309
-  hash: md5
-  path: test.csv.gz

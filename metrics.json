@@ -3,7 +3,7 @@
     "precision": 0.9958129797627355,
     "recall": 0.9986004198740378,
     "f1": 0.9972047519217331,
-    "total_time_in_seconds": 18.67841427700023,
-    "samples_per_second": 291.13820474022316,
-    "latency_in_seconds": 0.003434794828429612
+    "total_time_in_seconds": 18.576245737000136,
+    "samples_per_second": 292.73945214713655,
+    "latency_in_seconds": 0.003416006939499841
 }
