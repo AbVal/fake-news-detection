@@ -43,11 +43,6 @@ jobs:
       run: |
         dvc pull
 
-    - name: Install dependencies
-      run: |
-        pip install --upgrade pip
-        pip install -r requirements.txt
-
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
