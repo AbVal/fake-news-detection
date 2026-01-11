@@ -1,0 +1,53 @@
+vars:
+- training_params.yaml:output_dir
+
+stages:
+  prepare:
+    cmd: python3 prepare_dataset.py --data_path=${prepare.data_path} 
+      --val_size=${prepare.val_size} --test_size=${prepare.test_size} 
+      --random_state=${prepare.random_state}
+    deps:
+    - prepare_dataset.py
+    - src/dataset.py
+    outs:
+    - ${prepare.data_path}/train.csv.gz
+    - ${prepare.data_path}/test.csv.gz
+    - ${prepare.data_path}/val.csv.gz
+    params:
+    - prepare.data_path
+    - prepare.random_state
+    - prepare.test_size
+    - prepare.val_size
+  train:
+    cmd: python3 train.py --config_path=${train.config_path} 
+      --train_data_path="${prepare.data_path}/train.csv.gz" 
+      --val_data_path="${prepare.data_path}/val.csv.gz"
+    deps:
+    - train.py
+    - src/models.py
+    - src/dataset.py
+    - src/metrics.py
+    - src/utils.py
+    - src/config.py
+    - ${prepare.data_path}/train.csv.gz
+    - ${prepare.data_path}/val.csv.gz
+    outs:
+    - ${output_dir}
+    params:
+    - train.config_path
+    - training_params.yaml:
+  evaluate:
+    cmd: python3 validate.py --model_path=${output_dir} 
+      --data_path="${prepare.data_path}/test.csv.gz" 
+      --metrics_path=${evaluate.metrics_path}
+    deps:
+    - validate.py
+    - src/models.py
+    - src/dataset.py
+    - src/metrics.py
+    - ${prepare.data_path}/test.csv.gz
+    metrics:
+    - ${evaluate.metrics_path}:
+        cache: false
+    params:
+    - evaluate.metrics_path
